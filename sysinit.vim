@@ -1,11 +1,11 @@
-set number
+"""""""""""" setting
 set cursorline
 set tabstop=2
 set shiftwidth=4
 set autoindent
-"set list 将空字符以特殊形式显示出来
-"set scrolloff=4 光标默认位置
-"set wrap 自动折行
+set list "show space char,like space tab
+"set scrolloff=4
+"set wrap
 set foldmethod=indent
 set foldlevel=99
 set foldenable
@@ -17,13 +17,14 @@ set ignorecase
 set nocompatible
 set foldenable
 set foldmethod=indent
-"let g:python3_host_prog=/path/to/python/executable/
+set number
 let g:vimspector_enable_mappings = 'HUMAN'
-filetype off
+
+""""""""""""plugin
+call plug#begin('C:\Neovim\share\nvim\plugin')
 
 
 
-call plug#begin('D:\\soft\\Neovim\\share\\nvim\\plugin')
 Plug 'preservim/nerdtree'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 Plug 'flazz/vim-colorschemes'
@@ -32,17 +33,14 @@ Plug 'jaxbot/semantic-highlight.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'Chiel92/vim-autoformat'
 Plug 'puremourning/vimspector'
-"Plug 'skywind3000/vim-quickui'
+
+
 call plug#end()
 
+filetype plugin indent on
 
 
-autocmd FileType cpp :SemanticHighlight
-autocmd FileType md :SemanticHighlight
-autocmd FileType h :SemanticHighlight
-autocmd FileType cs :SemanticHighlight
-autocmd FileType py :SemanticHighlight
-
+""""""""""""key map
 inoremap ( ()<ESC>i
 inoremap ) <c-r>=ClosePair(')')<CR>
 inoremap { {<CR>}<ESC>O
@@ -56,7 +54,26 @@ nnoremap <LEFT> :vertical res -5<CR>
 nnoremap <RIGHT> :vertical res +5<CR>
 nnoremap <UP> :res +5<CR>
 nnoremap <DOWN> :res -5<CR>
-nmap gd <Plug>(coc-definition)
+nmap gd :vs<CR><Plug>(coc-definition)
+nmap gi <Plug>(coc-implementation)
+nmap gr <Plug>(coc-references)
+nmap gt <Plug>(coc-type-definition)
+nmap rn <Plug>(coc-rename) 
+nmap gl <Plug>(coc-openlink) 
+nnoremap ec :vs C:\Neovim\share\nvim\sysinit.vim<CR>
+nnoremap rc :source C:\Neovim\share\nvim\sysinit.vim<CR>
+
+
+""""""""""some function useful
+function! s:check_back_space() abort
+		let col = col('.') - 1
+		return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <expr> <TAB>
+		  \ pumvisible() ? "\<C-n>" :
+		  \ <SID>check_back_space() ? "\<TAB>" :
+		  \ coc#refresh()
 
 
 function ClosePair(char)
@@ -66,5 +83,17 @@ function ClosePair(char)
 		return a:char
 	endif
 endfunction
+func SetTitle()
+		 call setline(1, "/*************************************************************************") 
+		 call append(line("."), "	> File Name: ".expand("%")) 
+		 call append(line(".")+1, "	> Author: spectre") 
+		 call append(line(".")+2, "	> Mail: zhang192831@gmail.com ") 
+		 call append(line(".")+3, "	> Created Time: ".strftime("%c")) 
+		 call append(line(".")+4, " ************************************************************************/") 
+		 call append(line(".")+5, "")
+		 autocmd BufNewFile * normal G
+endfunction
 
-filetype plugin indent on 
+"""""""""""" pre run
+autocmd BufNewFile *.cpp,*.h,*.[ch],*.sh,*.java,*.py exec ":call SetTitle()"
+
